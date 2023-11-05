@@ -3,8 +3,15 @@
 ## Mathter CMake
 project(
 	Mathter
+        VERSION 0.1.0 # necessary for install
 	LANGUAGES CXX
 )
+
+# Options
+option(ENABLE_LLVM_COV "Adds compiler flags to generate LLVM source-based code coverage. Only works with Clang." OFF)
+option(MATHTER_USE_XSIMD "Uses XSimd for vectorization of math routines. Uses scalar fallback if turned off." ON)
+set(MATHTER_INIT_MODE "DEFAULT" CACHE STRING "Set default initialization of Mathter types.")
+set_property(CACHE MATHTER_INIT_MODE PROPERTY STRINGS DEFAULT NULL INVALID UNINITIALIZED)
 
 include(cmake/warning-guard.cmake)
 
@@ -27,15 +34,14 @@ target_include_directories(
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
 
+if (${MATHTER_USE_XSIMD})
+	find_package(xsimd)
+	target_link_libraries(Mathter INTERFACE xsimd)
+endif()
+
 if(NOT CMAKE_SKIP_INSTALL_RULES)
   include(cmake/install-rules.cmake)
 endif()
-
-# Options
-option(ENABLE_LLVM_COV "Adds compiler flags to generate LLVM source-based code coverage. Only works with Clang." OFF)
-option(MATHTER_USE_XSIMD "Uses XSimd for vectorization of math routines. Uses scalar fallback if turned off." ON)
-set(MATHTER_INIT_MODE "DEFAULT" CACHE STRING "Set default initialization of Mathter types.")
-set_property(CACHE MATHTER_INIT_MODE PROPERTY STRINGS DEFAULT NULL INVALID UNINITIALIZED)
 
 # Necessary compiler flags
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
