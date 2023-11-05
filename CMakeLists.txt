@@ -16,6 +16,10 @@ set_target_properties(mathter_mathter
 		EXPORT_NAME mathter
 )
 
+target_sources(mathter_mathter
+	INTERFACE
+		include/Mathter/Mathter.natvis
+)
 
 target_include_directories(
     mathter_mathter ${warning_guard}
